@@ -11,42 +11,85 @@
 #define Blue A2
 #define CLK_t 9
 #define DIO_t 8
+#define CLK2_t 11
+#define DIO2_t 10
+#define CLK3_t 7
+#define DIO3_t 6
+
 
 //MUDAR LIGHT PARA 1 NA VERSÃO FINAL
-int minute, hour, day=1, month=1, year=2020, state_button, pressed, seconds, cycle_state=0, cycle=0, checked=0, blinki_state=0, state_increment=0, state_decrement=0, state_color_but=0, state_color=0, light=0, init_state=0, init_sm=0;
+int minute, hour, day=1, month=1, year=2020, state_button, pressed, seconds, cycle_state=0, cycle=0, checked=0, blinki_state=0, state_increment=0, state_decrement=0, state_color_but=0, state_color=0, light=1, init_state=0, init_sm=0;
 int prev_sec, prev_min, prev_hour, prev_day, prev_month, prev_year, prev_blink, conf_check=1, conf_var=0;
 unsigned long curr_time, time_press, time_color;
 bool AnoBissexto, ConfMode;
 uint8_t second, blinking=0; 
 TM1637Display display = TM1637Display(CLK_t, DIO_t);
+TM1637Display display_2 = TM1637Display(CLK2_t, DIO2_t);
+TM1637Display display_3 = TM1637Display(CLK3_t, DIO3_t);
 const uint8_t data[] = {0xff, 0xff, 0xff, 0xff};
 const uint8_t init_1[] = {
+  SEG_A,
+  SEG_A
+};
+const uint8_t init_1_1[] = { //Para o display dos dias/ano
+  SEG_A,
+  SEG_A,
   SEG_A,
   SEG_A
 };
 const uint8_t init_2[] = {
   SEG_A | SEG_B 
 };
+const uint8_t init_2_2[] = { //Para o display do ano
+  SEG_A,
+  SEG_A | SEG_B | SEG_C 
+};
 const uint8_t init_3[] = {
   SEG_B | SEG_C
+};
+const uint8_t init_3_3[] = { //Para o display do ano
+  SEG_A | SEG_B | SEG_C | SEG_D
 };
 const uint8_t init_4[] = {
   SEG_C | SEG_D 
 };
-const uint8_t init_5[] = {
+const uint8_t init_4_4[] = { //Para o display do ano
+  SEG_D,
+  SEG_B | SEG_C | SEG_D
+};
+const uint8_t init_5[] = { 
+  SEG_D,
+  SEG_D
+};
+const uint8_t init_5_5[] = { //Para o display dos dias/ano
+  SEG_D,
+  SEG_D,
   SEG_D,
   SEG_D
 };
 const uint8_t init_6[] = {
   SEG_D | SEG_E
 };
+const uint8_t init_6_6[] = { //Para o display dos dias
+  SEG_D | SEG_E | SEG_F,
+  SEG_D
+};
 const uint8_t init_7[] = {
   SEG_E| SEG_F
+};
+const uint8_t init_7_7[] = { //Para o display dos dias
+  SEG_D | SEG_E| SEG_F
 };
 const uint8_t init_8[] = {
   SEG_A | SEG_F
 };
-
+const uint8_t init_8_8[] = { //Para o display dos dias
+  SEG_A | SEG_E | SEG_F,
+  SEG_A
+};
+const uint8_t init_5_one[] = { 
+  SEG_D
+};
 void setup() {
   // put your setup code here, to run once:
   FlexiTimer2::set(1000, timerInt);
@@ -60,6 +103,11 @@ void setup() {
   pinMode(Green, OUTPUT);
   pinMode(Blue, OUTPUT);
   display.clear();
+  display_2.clear();
+  display_3.clear();
+  display.setBrightness(7);
+  display_2.setBrightness(7);
+  display_3.setBrightness(7);
   RGB_color(0, 0, 0);
   //declarar butões - 4
   //declarar ecrasinhos
@@ -179,8 +227,14 @@ void ReadButs(){                                                                
     ConfMode=1;
     if (conf_var==0){
       display.clear();
+      display_2.clear();
+      display_3.clear();
       display.setSegments(init_5, 2, 2);
       display.setSegments(init_5, 2, 0);
+      display_2.setSegments(init_5, 2, 2);
+      display_2.setSegments(init_5, 2, 0);
+      display_3.setSegments(init_5, 2, 2);
+      display_3.setSegments(init_5, 2, 0);
       conf_var=1;
     }
     state_button=4;
@@ -190,8 +244,14 @@ void ReadButs(){                                                                
     ConfMode=1;
     if (conf_var==0){
       display.clear();
+      display_2.clear();
+      display_3.clear();
       display.setSegments(init_5, 2, 2);
       display.setSegments(init_5, 2, 0);
+      display_2.setSegments(init_5, 2, 2);
+      display_2.setSegments(init_5, 2, 0);
+      display_3.setSegments(init_5, 2, 2);
+      display_3.setSegments(init_5, 2, 0);
       conf_var=1;
     }
     state_button=2;
@@ -340,31 +400,7 @@ void Conf(int s, int m, int h, int D, int M, int Y){                            
     }
       state_decrement=0;
   }
-/*
-  if (prev_min!=m){ 
-    Print_clock(m, h, D, M, Y);
-    prev_min=m;
-  }
-  if (prev_hour!=h){ 
-    Print_clock(m, h, D, M, Y);
-    prev_hour=h;
-  }
-  if (prev_day!=D){ 
-    Print_clock(m, h, D, M, Y);
-    prev_day=D;
-  }
-  if (prev_month!=M){ 
-    Print_clock(m, h, D, M, Y);
-    prev_month=M;
-  }
-  if (prev_year!=Y){ 
-    Print_clock(m, h, D, M, Y);
-    prev_year=Y;
-  }
-*/
-  
-  //Print_clock(minute, hour, day, month, year);
-    
+   
     
     Serial.println();
     Serial.print("C: ");
@@ -412,7 +448,6 @@ void Conf(int s, int m, int h, int D, int M, int Y){                            
     Serial.print(":");
   
   
-  
   //if (blinking==0 && cycle==1){
   //Serial.print("_");
   //Serial.print("_");
@@ -422,32 +457,78 @@ void Conf(int s, int m, int h, int D, int M, int Y){                            
   //}
   //prints hh:mm:ss
     Serial.print(" ");
-  if (blinking==0 && cycle==7){
+
+    
+  if (blinking==0 && cycle==7 && prev_day==D){               //Set day animation 
+    if (prev_blink!=blinking){
+      prev_blink=blinking;
+      Print_clock_blink(m, h, D, M, Y, blinking, cycle);
+    }
     Serial.print("_");
     Serial.print("_");  
-  } else if ((blinking==1 && cycle==7) || cycle!=7){
+  } else if (blinking==1 && cycle==7 && prev_day==D){
+      if (prev_blink!=blinking){
+        prev_blink=blinking;
+        Print_clock_blink(m, h, D, M, Y, blinking, cycle);
+    }
     Serial.print(D/10);
     Serial.print(D%10);
+  } else if (prev_day!=D){
+     Print_clock_blink(m, h, D, M, Y, 1, cycle);
+     prev_day=D;
+     prev_blink=blinking;
   }
     Serial.print(" ");
-  if (blinking==0 && cycle==6){
+
+
+  if (blinking==0 && cycle==6 && prev_month==M){               //Set month animation 
+    if (prev_blink!=blinking){
+      prev_blink=blinking;
+      Print_clock_blink(m, h, D, M, Y, blinking, cycle);
+    }
     Serial.print("_");
     Serial.print("_");  
-  } else if ((blinking==1 && cycle==6) || cycle!=6){
+  } else if (blinking==1 && cycle==6 && prev_month==M){
+      if (prev_blink!=blinking){
+        prev_blink=blinking;
+        Print_clock_blink(m, h, D, M, Y, blinking, cycle);
+      }
     Serial.print(M/10);
     Serial.print(M%10);
+  } else if (prev_month!=M){
+      Print_clock_blink(m, h, D, M, Y, 1, cycle);
+      prev_month=M;
+      prev_blink=blinking;
   }
     Serial.print(" ");
-  if (blinking==0 && cycle==4){
+
+    
+  if (blinking==0 && cycle==4 && prev_year==Y){               //Set year animation (fazer)
+    if (prev_blink!=blinking){
+      prev_blink=blinking;
+      Print_clock_blink(m, h, D, M, Y, blinking, cycle);
+    }
     Serial.print(Y/10);
     Serial.print("_");  
-  } else if (blinking==0 && cycle==5){
+  } else if (blinking==0 && cycle==5 && prev_year==Y){
+      if (prev_blink!=blinking){
+        prev_blink=blinking;
+        Print_clock_blink(m, h, D, M, Y, blinking, cycle);
+      }
     Serial.print(Y/100);
     Serial.print("_");
     Serial.print(Y%10);  
-  } else if ((blinking==1 && cycle==4) || (blinking==1 && cycle==5) || (cycle!=4 && cycle!=5)){
+  } else if (((blinking==1 && cycle==4) || (blinking==1 && cycle==5)) && prev_year==Y){
+      if (prev_blink!=blinking){
+        prev_blink=blinking;
+        Print_clock_blink(m, h, D, M, Y, blinking, cycle);
+      }
     Serial.print(Y/10);
     Serial.print(Y%10);
+  } else if (prev_year!=Y){
+      Print_clock_blink(m, h, D, M, Y, 1, cycle);
+      prev_year=Y;
+      prev_blink=blinking;
   }
   
   //prints dd mm yy  
@@ -523,57 +604,92 @@ void RGB_color(int R, int G, int B){                                            
 int initialization(){                                                           //Initialization animation
     if (init_sm==0 && millis()>=0 && millis()<250){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_1, 2, 0);
+        display_2.setSegments(init_1_1, 4, 0);
         init_sm=1;
         return 0;
     } else if (init_sm==1 && millis()>=250 && millis()<500){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_1, 2, 1);
+        display_2.setSegments(init_1, 2, 2);
+        display_3.setSegments(init_1, 2, 0);
         init_sm=2;
         return 0;
     } else if (init_sm==2 && millis()>=500 && millis()<750){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_1, 2, 2);
+        display_3.setSegments(init_1_1, 4, 0);
         init_sm=3;
         return 0;
     } else if (init_sm==3 && millis()>=750 && millis()<1000){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_2, 1, 3);
+        display_3.setSegments(init_2_2, 2, 2);
         init_sm=4;
         return 0;
     } else if (init_sm==4 && millis()>=1000 && millis()<1250){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_3, 1, 3);
+        display_3.setSegments(init_3_3, 1, 3);
         init_sm=5;
         return 0;
     } else if (init_sm==5 && millis()>=1250 && millis()<1500){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_4, 1, 3);
+        display_3.setSegments(init_4_4, 2, 2);
         init_sm=6;
         return 0;
     } else if (init_sm==6 && millis()>=1500 && millis()<1750){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_5, 2, 2);
+        display_3.setSegments(init_5_5, 4, 0);
         init_sm=7;
         return 0;
     } else if (init_sm==7 && millis()>=1750 && millis()<2000){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_5, 2, 1);
+        display_2.setSegments(init_5, 2, 2);
+        display_3.setSegments(init_5, 2, 0);
         init_sm=8;
         return 0;
     } else if (init_sm==8 && millis()>=2000 && millis()<2250){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_5, 2, 0);
+        display_2.setSegments(init_5_5, 4, 0);
         init_sm=9;
         return 0;
     } else if (init_sm==9 && millis()>=2250 && millis()<2500){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_6, 1, 0);
+        display_2.setSegments(init_6_6, 2, 0);
         init_sm=10;
         return 0;
     } else if (init_sm==10 && millis()>=2500 && millis()<2750){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         display.setSegments(init_7, 1, 0);
+        display_2.setSegments(init_7_7, 1, 0);
         init_sm=11;
         return 0;
     /*} else if (init_sm==11 && millis()>=2750 && millis()<3000){
@@ -583,6 +699,8 @@ int initialization(){                                                           
         return 0;*/
     } else if (millis()>=2750){
         display.clear();
+        display_2.clear();
+        display_3.clear();
         return 1;
     }
 }
@@ -590,6 +708,10 @@ int initialization(){                                                           
 void Print_clock(int minute, int hour, int day, int month, int year){
     display.clear();
     display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+    display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+    //display_2.showNumberDec(day, false, 2, 0);
+    //display_2.showNumberDec(month, false, 2, 2);
+    display_3.showNumberDec(year, false, 4, 0);
 }
 
 void Print_clock_blink(int minute, int hour, int day, int month, int year, int B, int cyc){
@@ -597,20 +719,68 @@ void Print_clock_blink(int minute, int hour, int day, int month, int year, int B
     if (B==0 && cyc==2){
       display.setSegments(init_5, 2, 2);
       display.showNumberDec(hour, true, 2, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.showNumberDec(year, false, 4, 0);
     } else if (B==1 && cyc==2){
       display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.showNumberDec(year, false, 4, 0);
     } else if (B==0 && cyc==3){
       display.setSegments(init_5, 2, 0);
       display.showNumberDec(minute%10, false, 1, 3);
       display.showNumberDec(minute/10, false, 1, 2);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.showNumberDec(year, false, 4, 0);
     } else if (B==1 && cyc==3){
       display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.showNumberDec(year, false, 4, 0);
+    } else if (B==0 && cyc==6){
+      display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.setSegments(init_5, 2, 2);
+      display_2.showNumberDec(day, false, 2, 0);
+      display_3.showNumberDec(year, false, 4, 0);
+    } else if (B==1 && cyc==6){
+      display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.showNumberDec(year, false, 4, 0);
+    } else if (B==0 && cyc==7){
+      display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.setSegments(init_5, 2, 0);
+      display_2.showNumberDec(month%10, false, 1, 3);
+      display_2.showNumberDec(month/10, false, 1, 2);
+      display_3.showNumberDec(year, false, 4, 0);
+    } else if (B==1 && cyc==7){
+      display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.showNumberDec(year, false, 4, 0);
+    } else if (B==0 && cyc==4){
+      display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.setSegments(init_5_one, 1, 3);
+      display_3.showNumberDec(year/10, false, 3, 0);
+    } else if (B==1 && cyc==4){
+      display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.showNumberDec(year, false, 4, 0);
+    }else if (B==0 && cyc==5){
+      display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.setSegments(init_5_one, 1, 2);
+      display_3.showNumberDec(year/100, false, 2, 0);
+      display_3.showNumberDec(year%10, false, 1, 3);
+    } else if (B==1 && cyc==5){
+      display.showNumberDecEx(hour*100+minute, 0b01000000, true, 4, 0);
+      display_2.showNumberDecEx(day*100+month, 0b01000000, false, 4, 0);
+      display_3.showNumberDec(year, false, 4, 0);
     }
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  display.setBrightness(7);
+  
+  //display_2.setSegments(data);
+  //display_3.setSegments(data);
   if (init_state==0) init_state = initialization();
   else if (init_state!=0){
 
@@ -701,3 +871,28 @@ void loop() {
     }*/
   //display.showNumberDecEx(hour, 0b01000000, true, 2, 0);
   //display.showNumberDec(hour/10, false, 1, 0);
+
+  /*
+  if (prev_min!=m){ 
+    Print_clock(m, h, D, M, Y);
+    prev_min=m;
+  }
+  if (prev_hour!=h){ 
+    Print_clock(m, h, D, M, Y);
+    prev_hour=h;
+  }
+  if (prev_day!=D){ 
+    Print_clock(m, h, D, M, Y);
+    prev_day=D;
+  }
+  if (prev_month!=M){ 
+    Print_clock(m, h, D, M, Y);
+    prev_month=M;
+  }
+  if (prev_year!=Y){ 
+    Print_clock(m, h, D, M, Y);
+    prev_year=Y;
+  }
+*/
+  
+  //Print_clock(minute, hour, day, month, year);
